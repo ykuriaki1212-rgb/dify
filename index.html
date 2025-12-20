@@ -738,6 +738,25 @@
                     <div class="flow-step-desc">最終出力・ダウンロード</div>
                 </div>
             </div>
+            
+            <!-- Action Buttons (フロー図の下) -->
+            <div class="action-buttons" style="margin-top: 1.5rem;">
+                <button class="btn btn-secondary" onclick="openApiSettings()">
+                    ⚙️ API設定
+                </button>
+                <button class="btn btn-primary" onclick="saveToLocal()">
+                    💾 ローカル保存
+                </button>
+                <button class="btn btn-success" onclick="saveToSpreadsheet()">
+                    ☁️ スプレッドシートに保存
+                </button>
+                <button class="btn btn-secondary" onclick="loadFromSpreadsheet()">
+                    📥 スプレッドシートから読込
+                </button>
+                <button class="btn btn-secondary" onclick="exportData()">
+                    📤 JSONエクスポート
+                </button>
+            </div>
         </section>
 
         <!-- Progress Summary -->
@@ -1148,25 +1167,6 @@
                 </div>
             </div>
         </section>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <button class="btn btn-secondary" onclick="openApiSettings()">
-                ⚙️ API設定
-            </button>
-            <button class="btn btn-primary" onclick="saveToLocal()">
-                💾 ローカル保存
-            </button>
-            <button class="btn btn-success" onclick="saveToSpreadsheet()">
-                ☁️ スプレッドシートに保存
-            </button>
-            <button class="btn btn-secondary" onclick="loadFromSpreadsheet()">
-                📥 スプレッドシートから読込
-            </button>
-            <button class="btn btn-secondary" onclick="exportData()">
-                📤 JSONエクスポート
-            </button>
-        </div>
     </main>
 
     <!-- API Settings Modal -->
