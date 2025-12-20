@@ -143,6 +143,17 @@
             font-size: 2rem;
             font-weight: 700;
             color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .countdown-timer.urgent {
+            color: #ff3333;
+            animation: urgentPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         .countdown-date {
@@ -310,6 +321,35 @@
             background: var(--gradient-1);
             border-radius: 4px;
             transition: width 0.5s ease;
+        }
+
+        /* Encouragement Message */
+        .encouragement-message {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(255, 215, 0, 0.2) 100%);
+            border: 2px solid var(--accent-green);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: encourageBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes encourageBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .encouragement-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .encouragement-text {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            letter-spacing: 1px;
         }
 
         /* Steps Grid */
@@ -724,7 +764,7 @@
             <div class="countdown-container">
                 <div class="countdown-label">提出日まで残り</div>
                 <div class="countdown-timer" id="countdown">-- 日 --:--:--</div>
-                <div class="countdown-date">提出期限: 2026年1月9日</div>
+                <div class="countdown-date">提出期限: 2026年1月9日 15:00</div>
             </div>
         </div>
     </header>
@@ -819,6 +859,12 @@
             </div>
         </section>
 
+        <!-- Encouragement Message -->
+        <div class="encouragement-message" id="encouragementMessage" style="display: none;">
+            <span class="encouragement-icon">🎉</span>
+            <span class="encouragement-text">もうすぐゴールです。最後まで頑張りましょう！</span>
+        </div>
+
         <!-- Steps -->
         <section class="steps-grid">
             <!-- Step 1 -->
@@ -884,9 +930,9 @@
                         </div>
                     </div>
                     <div class="issue-section">
-                        <div class="issue-label">📝 現在の課題（500字以内）</div>
-                        <textarea class="issue-textarea" data-step="1" maxlength="500" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
-                        <div class="char-count"><span id="char-count-1">0</span> / 500</div>
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="1" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-1">0</span> / 800</div>
                     </div>
                 </div>
             </div>
@@ -954,9 +1000,9 @@
                         </div>
                     </div>
                     <div class="issue-section">
-                        <div class="issue-label">📝 現在の課題（500字以内）</div>
-                        <textarea class="issue-textarea" data-step="2" maxlength="500" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
-                        <div class="char-count"><span id="char-count-2">0</span> / 500</div>
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="2" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-2">0</span> / 800</div>
                     </div>
                 </div>
             </div>
@@ -1031,9 +1077,9 @@
                         </div>
                     </div>
                     <div class="issue-section">
-                        <div class="issue-label">📝 現在の課題（500字以内）</div>
-                        <textarea class="issue-textarea" data-step="3" maxlength="500" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
-                        <div class="char-count"><span id="char-count-3">0</span> / 500</div>
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="3" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-3">0</span> / 800</div>
                     </div>
                 </div>
             </div>
@@ -1115,9 +1161,9 @@
                         </div>
                     </div>
                     <div class="issue-section">
-                        <div class="issue-label">📝 現在の課題（500字以内）</div>
-                        <textarea class="issue-textarea" data-step="4" maxlength="500" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
-                        <div class="char-count"><span id="char-count-4">0</span> / 500</div>
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="4" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-4">0</span> / 800</div>
                     </div>
                 </div>
             </div>
@@ -1199,9 +1245,9 @@
                         </div>
                     </div>
                     <div class="issue-section">
-                        <div class="issue-label">📝 現在の課題（500字以内）</div>
-                        <textarea class="issue-textarea" data-step="5" maxlength="500" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
-                        <div class="char-count"><span id="char-count-5">0</span> / 500</div>
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="5" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-5">0</span> / 800</div>
                     </div>
                 </div>
             </div>
@@ -1311,12 +1357,16 @@
 
         // Countdown Timer
         function updateCountdown() {
-            const deadline = new Date('2026-01-09T23:59:59');
+            // 日本時間 2026年1月9日 15:00 を明示的に設定
+            const deadline = new Date('2026-01-09T15:00:00+09:00');
             const now = new Date();
             const diff = deadline - now;
 
+            const countdownElement = document.getElementById('countdown');
+
             if (diff <= 0) {
-                document.getElementById('countdown').textContent = '提出期限終了';
+                countdownElement.textContent = '提出期限終了';
+                countdownElement.classList.add('urgent');
                 return;
             }
 
@@ -1325,8 +1375,15 @@
             const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-            document.getElementById('countdown').textContent = 
+            countdownElement.textContent = 
                 `${days}日 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // 残り5日を切ったら赤色に
+            if (days < 5) {
+                countdownElement.classList.add('urgent');
+            } else {
+                countdownElement.classList.remove('urgent');
+            }
         }
 
         // Event Listeners
@@ -1369,9 +1426,9 @@
                     
                     const countDiv = countSpan.parentElement;
                     countDiv.classList.remove('warning', 'error');
-                    if (charCount >= 450) {
+                    if (charCount >= 750) {
                         countDiv.classList.add('error');
-                    } else if (charCount >= 400) {
+                    } else if (charCount >= 650) {
                         countDiv.classList.add('warning');
                     }
                 });
@@ -1397,12 +1454,24 @@
             }
 
             const progressPercent = totalItems > 0 ? Math.round((totalComplete / totalItems) * 100) : 0;
+            const remainingItems = totalItems - totalComplete;
             
             document.getElementById('total-progress').textContent = `${progressPercent}%`;
             document.getElementById('total-progress-bar').style.width = `${progressPercent}%`;
             document.getElementById('completed-count').textContent = totalComplete;
             document.getElementById('total-items').textContent = `/ ${totalItems} 項目`;
-            document.getElementById('remaining-count').textContent = totalItems - totalComplete;
+            document.getElementById('remaining-count').textContent = remainingItems;
+
+            // 残り項目数が5以下の場合、応援メッセージを表示
+            const encouragementMessage = document.getElementById('encouragementMessage');
+            if (remainingItems <= 5 && remainingItems > 0) {
+                encouragementMessage.style.display = 'block';
+            } else if (remainingItems === 0) {
+                encouragementMessage.querySelector('.encouragement-text').textContent = '🎊 おめでとうございます！全項目完了です！ 🎊';
+                encouragementMessage.style.display = 'block';
+            } else {
+                encouragementMessage.style.display = 'none';
+            }
         }
 
         // Update Flow Diagram
@@ -1455,7 +1524,7 @@
         function saveToLocal() {
             dashboardData.lastUpdated = new Date().toISOString();
             localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
-            showToast('スプレッドシートに保存しました');
+            showToast('ローカルに保存しました');
         }
 
         // Load from Local Storage
