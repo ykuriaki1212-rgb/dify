@@ -632,6 +632,51 @@
             margin-top: 1.5rem;
         }
 
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 23, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-message {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header-content {
@@ -744,14 +789,8 @@
                 <button class="btn btn-secondary" onclick="openApiSettings()">
                     ⚙️ API設定
                 </button>
-                <button class="btn btn-primary" onclick="saveToLocal()">
-                    💾 ローカル保存
-                </button>
                 <button class="btn btn-success" onclick="saveToSpreadsheet()">
                     ☁️ スプレッドシートに保存
-                </button>
-                <button class="btn btn-secondary" onclick="loadFromSpreadsheet()">
-                    📥 スプレッドシートから読込
                 </button>
                 <button class="btn btn-secondary" onclick="exportData()">
                     📤 JSONエクスポート
@@ -1190,6 +1229,14 @@
         <span class="toast-message" id="toast-message">保存しました</span>
     </div>
 
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-message" id="loadingMessage">データを読み込んでいます...</div>
+        </div>
+    </div>
+
     <script>
         // Data Structure
         let dashboardData = {
@@ -1207,13 +1254,60 @@
         let apiUrl = localStorage.getItem('dashboardApiUrl') || 'https://script.google.com/macros/s/AKfycbwgohZQjX5hMKXxidmyt-b23t6vsyjimmdFdwy73IhZEYApO8DFHHg-PcuTaQ4fxb6V/exec';
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadFromLocal();
+        document.addEventListener('DOMContentLoaded', async () => {
             setupEventListeners();
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            updateProgress();
+            
+            // スプレッドシートからデータを自動読み込み
+            await autoLoadFromSpreadsheet();
         });
+
+        // スプレッドシートから自動読み込み
+        async function autoLoadFromSpreadsheet() {
+            showLoadingOverlay('データを読み込んでいます...');
+            
+            try {
+                const response = await fetch(`${apiUrl}?action=load`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    dashboardData = result.data;
+                    loadDataFromUI();
+                    updateProgress();
+                    updateFlowDiagram();
+                    hideLoadingOverlay();
+                    showToast('スプレッドシートからデータを読み込みました', 'success');
+                } else {
+                    // データがない場合はローカルから読み込み試行
+                    loadFromLocal();
+                    updateProgress();
+                    hideLoadingOverlay();
+                    showToast('新規データとして開始します', 'info');
+                }
+            } catch (error) {
+                console.error('Auto load error:', error);
+                // エラー時はローカルから読み込み
+                loadFromLocal();
+                updateProgress();
+                hideLoadingOverlay();
+                showToast('オフラインモードで開始します', 'warning');
+            }
+        }
+
+        // ローディングオーバーレイを表示
+        function showLoadingOverlay(message) {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.textContent = message;
+            overlay.classList.add('show');
+        }
+
+        // ローディングオーバーレイを非表示
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('show');
+        }
 
         // Countdown Timer
         function updateCountdown() {
@@ -1361,7 +1455,7 @@
         function saveToLocal() {
             dashboardData.lastUpdated = new Date().toISOString();
             localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
-            showToast('ローカルに保存しました');
+            showToast('スプレッドシートに保存しました');
         }
 
         // Load from Local Storage
@@ -1474,8 +1568,18 @@
             const toastIcon = toast.querySelector('.toast-icon');
             
             toastMessage.textContent = message;
-            toastIcon.textContent = type === 'success' ? '✅' : '⚠️';
-            toast.style.borderColor = type === 'success' ? 'var(--accent-green)' : 'var(--accent-orange)';
+            
+            // アイコンと色をタイプに応じて設定
+            const config = {
+                success: { icon: '✅', color: 'var(--accent-green)' },
+                error: { icon: '❌', color: 'var(--accent-magenta)' },
+                warning: { icon: '⚠️', color: 'var(--accent-orange)' },
+                info: { icon: 'ℹ️', color: 'var(--accent-cyan)' }
+            };
+            
+            const { icon, color } = config[type] || config.success;
+            toastIcon.textContent = icon;
+            toast.style.borderColor = color;
             
             toast.classList.add('show');
             setTimeout(() => {
