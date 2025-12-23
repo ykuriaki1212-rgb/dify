@@ -27,7 +27,7 @@
 2. 「新規」→「Google スプレッドシート」→「空白のスプレッドシート」
 3. スプレッドシートに名前を付ける（例：「生成AI競技会進捗管理」）
 4. URLからスプレッドシートIDをコピー
-   - URL: `https://docs.google.com/spreadsheets/d/1Exqpklr9_1wN7pUsEJ9VvdbCk2YIjZEQSn7nEuY1rd8/edit`
+   - URL: `https://docs.google.com/spreadsheets/d/この部分がID/edit`
 
 #### Step 2: Google Apps Scriptの設定
 
@@ -57,7 +57,7 @@
    - アクセスできるユーザー: **全員**（CORSの関係で必要）
 4. 「デプロイ」をクリック
 5. 表示されるURLをコピー
-https://script.google.com/macros/s/AKfycbwgohZQjX5hMKXxidmyt-b23t6vsyjimmdFdwy73IhZEYApO8DFHHg-PcuTaQ4fxb6V/exec
+https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX/exec
 
 #### Step 5: ダッシュボードとの接続
 
