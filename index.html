@@ -749,6 +749,260 @@
                 width: 100%;
             }
         }
+
+        /* Feedback Section Styles */
+        .feedback-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-overall {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feedback-overall-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .feedback-overall-content {
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .feedback-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+
+        .feedback-progress-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .feedback-progress-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feedback-progress-track {
+            flex: 1;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .feedback-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .feedback-progress-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            white-space: nowrap;
+        }
+
+        .feedback-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        .feedback-table th,
+        .feedback-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .feedback-table th {
+            background: var(--bg-secondary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+        }
+
+        .feedback-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .feedback-table tbody tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .feedback-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .col-no {
+            width: 50px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+        }
+
+        .col-step {
+            width: 70px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+
+        .col-point {
+            width: 140px;
+            color: var(--accent-magenta);
+            font-weight: 500;
+        }
+
+        .col-feedback {
+            min-width: 280px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .col-comment {
+            width: 220px;
+            position: relative;
+        }
+
+        .col-status {
+            width: 100px;
+            text-align: center;
+        }
+
+        .feedback-comment {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feedback-comment:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .feedback-comment::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .feedback-char-count {
+            display: block;
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .feedback-char-count.warning {
+            color: var(--accent-orange);
+        }
+
+        .feedback-char-count.error {
+            color: var(--accent-magenta);
+        }
+
+        .feedback-status {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2rem;
+        }
+
+        .feedback-status:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .feedback-status.status-complete {
+            background-color: rgba(0, 255, 136, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .feedback-status.status-incomplete {
+            background-color: rgba(255, 107, 53, 0.1);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        @media (max-width: 1200px) {
+            .feedback-table {
+                min-width: 100%;
+            }
+            
+            .feedback-table th,
+            .feedback-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .col-feedback {
+                min-width: 200px;
+            }
+
+            .col-comment {
+                width: 180px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1252,6 +1506,192 @@
                 </div>
             </div>
         </section>
+
+        <!-- Feedback Section -->
+        <section class="feedback-section">
+            <div class="section-title">📋 中間評価フィードバック</div>
+            
+            <!-- Overall Comment -->
+            <div class="feedback-overall">
+                <div class="feedback-overall-title">📝 全体講評</div>
+                <div class="feedback-overall-content">
+                    一通りの要件については満たせていました。より高い点数を取るためには、Step3~5での想定外入力への対応や速度面の改善、文字数の制御など細かい部分を修正していくとよいでしょう。
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="feedback-progress-container">
+                <div class="feedback-progress-label">対応進捗</div>
+                <div class="feedback-progress-wrapper">
+                    <div class="feedback-progress-track">
+                        <div class="feedback-progress-fill" id="feedback-progress-bar"></div>
+                    </div>
+                    <span class="feedback-progress-text" id="feedback-progress-text">0 / 9 完了</span>
+                </div>
+            </div>
+
+            <!-- Feedback Table -->
+            <div class="feedback-table-container">
+                <table class="feedback-table">
+                    <thead>
+                        <tr>
+                            <th class="col-no">No.</th>
+                            <th class="col-step">Step</th>
+                            <th class="col-point">観点</th>
+                            <th class="col-feedback">フィードバック</th>
+                            <th class="col-comment">コメント（500字以内）</th>
+                            <th class="col-status">ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="feedback-row" data-id="1">
+                            <td class="col-no">1</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">構造化</td>
+                            <td class="col-feedback">要望タイプが文章で表示される、複数表示されることがあります。今回は一つに絞りましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="1" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="1">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="2">
+                            <td class="col-no">2</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">想定外入力の際の対応が、ユーザーにとって曖昧です。原因がわかるとよいでしょう。<br>※想定外の入力の場合でも不明点フローになってしまうパターンが多いです。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="2" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="2">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="3">
+                            <td class="col-no">3</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">構造化</td>
+                            <td class="col-feedback">要望タイプが不明の場合、候補をいくつか表示ではなく毎回すべての種類を表示するとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="3" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="3">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="4">
+                            <td class="col-no">4</td>
+                            <td class="col-step">2</td>
+                            <td class="col-point">適切なナレッジソース選択</td>
+                            <td class="col-feedback">Difyの引用機能を使って引用が明記できていないことがありました。引用を明記できるとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="4" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="4">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="5">
+                            <td class="col-no">5</td>
+                            <td class="col-step">4</td>
+                            <td class="col-point">要約内容</td>
+                            <td class="col-feedback">要約内容は全体で200～300文字になるように調整しましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="5" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="5">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="6">
+                            <td class="col-no">6</td>
+                            <td class="col-step">4.5</td>
+                            <td class="col-point">要約内容</td>
+                            <td class="col-feedback">出力形式の変更時、要約の内容も若干変化しています。要約内容は保持し、形式のみの変更となるようにしましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="6" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="6">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="7">
+                            <td class="col-no">7</td>
+                            <td class="col-step">2~5</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">Step2以降の段階で無意味な文字列を入力すると何も返ってきません。各Stepでのユーザーの入力に応じて適切な出力ができるとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="7" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="7">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="8">
+                            <td class="col-no">8</td>
+                            <td class="col-step">3~5</td>
+                            <td class="col-point">テキストの構造化</td>
+                            <td class="col-feedback">出力ごとにテキストの構造化形式にばらつきがあるため、統一した形式で出力できるとよいでしょう。また、PDF化の際に項目と文章が一体化してしまう部分も整理できるとよりよいです。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="8" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="8">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="9">
+                            <td class="col-no">9</td>
+                            <td class="col-step">1~5</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">最初に『松にします』と入力した際、STEP3に直接進んでしまうため、STEP1から順にSTEP5まで段階的に進む仕様にしてください。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="9" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="9">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <!-- API Settings Modal -->
@@ -1655,6 +2095,100 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+
+        // Feedback Section Functions
+        function initFeedbackSection() {
+            loadFeedbackData();
+            setupFeedbackEventListeners();
+        }
+
+        function loadFeedbackData() {
+            const saved = localStorage.getItem('feedbackData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.querySelectorAll('.feedback-comment').forEach(textarea => {
+                    const id = textarea.dataset.id;
+                    if (data[id]) {
+                        textarea.value = data[id].comment || '';
+                        updateFeedbackCharCount(textarea);
+                    }
+                });
+                document.querySelectorAll('.feedback-status').forEach(select => {
+                    const id = select.dataset.id;
+                    if (data[id]) {
+                        select.value = data[id].status || '未完了';
+                        updateFeedbackStatusStyle(select);
+                    }
+                });
+            }
+            updateFeedbackProgress();
+        }
+
+        function setupFeedbackEventListeners() {
+            document.querySelectorAll('.feedback-comment').forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    updateFeedbackCharCount(this);
+                    saveFeedbackData();
+                });
+            });
+            document.querySelectorAll('.feedback-status').forEach(select => {
+                select.addEventListener('change', function() {
+                    updateFeedbackStatusStyle(this);
+                    saveFeedbackData();
+                    updateFeedbackProgress();
+                });
+            });
+        }
+
+        function updateFeedbackCharCount(textarea) {
+            const countSpan = textarea.parentElement.querySelector('.feedback-char-count');
+            const count = textarea.value.length;
+            countSpan.textContent = `${count}/500`;
+            countSpan.classList.remove('warning', 'error');
+            if (count >= 500) {
+                countSpan.classList.add('error');
+            } else if (count >= 400) {
+                countSpan.classList.add('warning');
+            }
+        }
+
+        function updateFeedbackStatusStyle(select) {
+            select.classList.remove('status-complete', 'status-incomplete');
+            if (select.value === '完了') {
+                select.classList.add('status-complete');
+            } else {
+                select.classList.add('status-incomplete');
+            }
+        }
+
+        function saveFeedbackData() {
+            const data = {};
+            document.querySelectorAll('.feedback-row').forEach(row => {
+                const id = row.dataset.id;
+                const comment = row.querySelector('.feedback-comment').value;
+                const status = row.querySelector('.feedback-status').value;
+                data[id] = { comment, status };
+            });
+            localStorage.setItem('feedbackData', JSON.stringify(data));
+        }
+
+        function updateFeedbackProgress() {
+            const total = document.querySelectorAll('.feedback-status').length;
+            const completed = document.querySelectorAll('.feedback-status option[value="完了"]:checked').length || 
+                             Array.from(document.querySelectorAll('.feedback-status')).filter(s => s.value === '完了').length;
+            const progressText = document.getElementById('feedback-progress-text');
+            const progressBar = document.getElementById('feedback-progress-bar');
+            if (progressText && progressBar) {
+                const percent = Math.round((completed / total) * 100);
+                progressText.textContent = `${completed} / ${total} 完了`;
+                progressBar.style.width = `${percent}%`;
+            }
+        }
+
+        // Initialize feedback section when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initFeedbackSection();
+        });
     </script>
 </body>
 </html>
