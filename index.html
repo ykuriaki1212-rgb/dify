@@ -899,18 +899,20 @@
         }
 
         .col-comment {
-            width: 220px;
+            width: 320px;
+            min-width: 280px;
             position: relative;
         }
 
         .col-status {
-            width: 100px;
+            width: 120px;
+            min-width: 110px;
             text-align: center;
         }
 
         .feedback-comment {
             width: 100%;
-            min-height: 80px;
+            min-height: 120px;
             padding: 0.75rem;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
@@ -920,6 +922,7 @@
             font-size: 0.85rem;
             resize: vertical;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            line-height: 1.5;
         }
 
         .feedback-comment:focus {
@@ -951,7 +954,8 @@
 
         .feedback-status {
             width: 100%;
-            padding: 0.5rem 0.75rem;
+            min-width: 100px;
+            padding: 0.6rem 2.2rem 0.6rem 0.75rem;
             background: var(--bg-primary);
             border: 2px solid var(--border-color);
             border-radius: 8px;
@@ -964,8 +968,9 @@
             -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            padding-right: 2rem;
+            background-position: right 0.5rem center;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         .feedback-status:focus {
@@ -1000,7 +1005,17 @@
             }
 
             .col-comment {
-                width: 180px;
+                width: 240px;
+                min-width: 200px;
+            }
+
+            .col-status {
+                width: 110px;
+                min-width: 100px;
+            }
+
+            .feedback-comment {
+                min-height: 100px;
             }
         }
     </style>
