@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎉 宴会クイズ大会 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --soccer-primary: #00a651;
+  --soccer-secondary: #fff200;
+  --soccer-dark: #1a472a;
+  --baseball-primary: #c8102e;
+  --baseball-secondary: #f5f0e1;
+  --baseball-dark: #1c2841;
+  --gold: #ffd700;
+  --bg-dark: #0d0d1a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--bg-dark);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.stars {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.star {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 2s infinite alternate;
+}
+@keyframes twinkle {
+  0% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === TITLE SCREEN === */
+.title-screen {
+  text-align: center;
+  animation: fadeInUp 1s ease;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title-screen h1 {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  background: linear-gradient(135deg, var(--gold), #ff6b35, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+.title-sub {
+  font-size: 1.1rem;
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+.player-cards {
+  display: flex; gap: 20px; justify-content: center;
+  flex-wrap: wrap; margin-bottom: 40px;
+}
+.player-card {
+  background: rgba(255,255,255,0.05);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 25px 30px;
+  width: 260px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s, border-color 0.3s;
+}
+.player-card:hover { transform: translateY(-5px); }
+.player-card.soccer { border-color: var(--soccer-primary); }
+.player-card.baseball { border-color: var(--baseball-primary); }
+.player-card .icon { font-size: 3rem; margin-bottom: 10px; }
+.player-card .name {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 5px;
+}
+.player-card.soccer .name { color: var(--soccer-secondary); }
+.player-card.baseball .name { color: var(--baseball-secondary); }
+.player-card .desc { font-size: 0.85rem; color: #999; line-height: 1.6; }
+
+.start-btn {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.4rem;
+  padding: 18px 60px;
+  border: none;
+  border-radius: 60px;
+  background: linear-gradient(135deg, #ff6b35, #ff2d55);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 30px rgba(255,45,85,0.4);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 8px 30px rgba(255,45,85,0.4); }
+  50% { box-shadow: 0 8px 50px rgba(255,45,85,0.7); }
+}
+.start-btn:hover { transform: scale(1.08); }
+.start-btn:active { transform: scale(0.96); }
+
+/* === QUIZ SCREEN === */
+.quiz-screen { display: none; width: 100%; text-align: center; }
+
+.progress-bar-wrap {
+  width: 100%; height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s ease, background 0.6s;
+  width: 0%;
+}
+.progress-bar.soccer { background: linear-gradient(90deg, var(--soccer-primary), var(--soccer-secondary)); }
+.progress-bar.baseball { background: linear-gradient(90deg, var(--baseball-primary), #f4a460); }
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.q-number {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.05rem;
+}
+.q-badge {
+  padding: 6px 18px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.q-badge.soccer { background: var(--soccer-primary); color: #fff; }
+.q-badge.baseball { background: var(--baseball-primary); color: #fff; }
+.score-display {
+  font-size: 1rem;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.question-card {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 35px 30px;
+  margin-bottom: 25px;
+  backdrop-filter: blur(10px);
+  animation: slideIn 0.5s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.question-card.soccer-border { border-color: rgba(0,166,81,0.4); }
+.question-card.baseball-border { border-color: rgba(200,16,46,0.4); }
+
+.question-text {
+  font-size: clamp(1.05rem, 3vw, 1.3rem);
+  font-weight: 700;
+  line-height: 1.7;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 500px) {
+  .choices { grid-template-columns: 1fr; }
+}
+
+.choice-btn {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 15px 18px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.25s;
+  text-align: left;
+}
+.choice-btn:hover:not(.disabled) {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+.choice-btn.correct {
+  background: rgba(0,166,81,0.25);
+  border-color: var(--soccer-primary);
+  color: #7fff7f;
+}
+.choice-btn.wrong {
+  background: rgba(200,16,46,0.25);
+  border-color: var(--baseball-primary);
+  color: #ff7f7f;
+}
+.choice-btn.disabled { pointer-events: none; opacity: 0.6; }
+.choice-btn .label {
+  display: inline-block;
+  width: 26px; height: 26px;
+  line-height: 26px;
+  text-align: center;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  margin-right: 10px;
+  font-size: 0.8rem;
+}
+
+.explanation {
+  display: none;
+  margin-top: 20px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
+  border-left: 4px solid var(--gold);
+  text-align: left;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #ccc;
+  animation: fadeInUp 0.4s ease;
+}
+.explanation strong { color: var(--gold); }
+
+.next-btn {
+  display: none;
+  margin-top: 25px;
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.1rem;
+  padding: 14px 50px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+}
+.next-btn:hover { transform: scale(1.05); }
+
+/* === EFFECT OVERLAYS === */
+.effect-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.effect-text {
+  font-family: 'Dela Gothic One', sans-serif;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.soccer-goal {
+  font-size: clamp(3rem, 10vw, 6rem);
+  color: var(--soccer-secondary);
+  text-shadow: 0 0 40px rgba(255,242,0,0.7);
+  animation: goalBounce 0.8s ease;
+}
+@keyframes goalBounce {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.soccer-miss {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: #ff4444;
+  text-shadow: 0 0 30px rgba(255,68,68,0.5);
+  animation: missShake 0.6s ease;
+}
+@keyframes missShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-20px); }
+  30% { transform: translateX(20px); }
+  45% { transform: translateX(-15px); }
+  60% { transform: translateX(15px); }
+  75% { transform: translateX(-5px); }
+}
+
+.baseball-hr {
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(255,215,0,0.7);
+  animation: hrLaunch 0.8s ease;
+}
+@keyframes hrLaunch {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.baseball-out {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: #6688cc;
+  text-shadow: 0 0 30px rgba(102,136,204,0.5);
+  animation: strikeout 0.7s ease;
+}
+@keyframes strikeout {
+  0% { transform: scale(3) rotate(10deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.confetti {
+  position: fixed;
+  z-index: 101;
+  pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0% { opacity: 1; transform: translateY(-20px) rotateZ(0deg) rotateY(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotateZ(720deg) rotateY(360deg); }
+}
+
+.baseball-emoji {
+  position: fixed;
+  z-index: 101;
+  pointer-events: none;
+  font-size: 2.5rem;
+  animation: baseballFly 1.2s ease-out forwards;
+}
+@keyframes baseballFly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+
+/* === HALFTIME === */
+.halftime-screen {
+  display: none;
+  text-align: center;
+  width: 100%;
+  animation: fadeInUp 1s ease;
+}
+.halftime-card {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,215,0,0.25);
+  border-radius: 30px;
+  padding: 40px 30px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+}
+.halftime-card h2 {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  margin-bottom: 20px;
+  color: var(--gold);
+}
+.halftime-scores {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 25px 0;
+  flex-wrap: wrap;
+}
+.ht-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 20px 25px;
+  min-width: 140px;
+}
+.ht-item .ht-icon { font-size: 2rem; margin-bottom: 8px; }
+.ht-item .ht-label { font-size: 0.85rem; color: #999; margin-bottom: 5px; }
+.ht-item .ht-value {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.4rem;
+  color: var(--gold);
+}
+.ht-msg {
+  font-size: 1rem;
+  color: #bbb;
+  margin-top: 15px;
+  line-height: 1.6;
+}
+.continue-btn {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.2rem;
+  padding: 16px 55px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+  animation: pulse 2s infinite;
+}
+.continue-btn:hover { transform: scale(1.05); }
+
+/* === RESULT SCREEN === */
+.result-screen {
+  display: none;
+  text-align: center;
+  width: 100%;
+  animation: fadeInUp 1s ease;
+}
+
+.result-card {
+  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,215,0,0.3);
+  border-radius: 30px;
+  padding: 40px 30px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+}
+.result-card h2 {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--gold), #ff6b35);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.result-score {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: clamp(4rem, 12vw, 7rem);
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(255,215,0,0.5);
+  line-height: 1;
+}
+.result-score span { font-size: 0.4em; color: #aaa; }
+
+.result-breakdown {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+.breakdown-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 20px 30px;
+  min-width: 160px;
+}
+.breakdown-item .bi-icon { font-size: 2rem; margin-bottom: 8px; }
+.breakdown-item .bi-label { font-size: 0.85rem; color: #999; margin-bottom: 5px; }
+.breakdown-item .bi-value {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.5rem;
+}
+
+.rating-section { margin-top: 30px; }
+.rating-section h3 {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #ddd;
+}
+.rating-stars {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  letter-spacing: 8px;
+}
+.rating-label {
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.rating-desc {
+  font-size: 0.95rem;
+  color: #aaa;
+  line-height: 1.7;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.retry-btn {
+  margin-top: 30px;
+  font-family: 'Dela Gothic One', sans-serif;
+  font-size: 1.1rem;
+  padding: 14px 50px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.retry-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+}
+
+.final-confetti {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  animation: confettiExplode ease-out forwards;
+}
+@keyframes confettiExplode {
+  0% { opacity: 1; transform: translate(0,0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.5); }
+}
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+<div class="effect-overlay" id="effectOverlay"></div>
+
+<div class="container">
+
+  <!-- TITLE -->
+  <div class="title-screen" id="titleScreen">
+    <h1>🎉 宴会クイズ大会 🎉</h1>
+    <p class="title-sub">白戸功さん＆キーナンティミーさんを<br>どれだけ知ってる!?　全20問</p>
+    <div class="player-cards">
+      <div class="player-card soccer">
+        <div class="icon">⚽</div>
+        <div class="name">白戸 功さん</div>
+        <div class="desc">
+          埼玉シニア60のレジェンド<br>
+          2026年3月23日で68歳！<br>
+          🎂 おめでとうございます！
+        </div>
+      </div>
+      <div class="player-card baseball">
+        <div class="icon">⚾</div>
+        <div class="name">キーナンティミー さん</div>
+        <div class="desc">
+          NTT関東の伝説のスラッガー<br>
+          社会人野球界の怪物<br>
+          通算135本塁打！
+        </div>
+      </div>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">クイズ START！</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-screen" id="quizScreen">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="question-header">
+      <span class="q-number" id="qNumber"></span>
+      <span class="q-badge" id="qBadge"></span>
+      <span class="score-display" id="scoreDisplay">スコア: 0点</span>
+    </div>
+    <div class="question-card" id="questionCard">
+      <p class="question-text" id="questionText"></p>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="explanation" id="explanation"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">次の問題へ ▶</button>
+  </div>
+
+  <!-- HALFTIME -->
+  <div class="halftime-screen" id="halftimeScreen">
+    <div class="halftime-card">
+      <h2>🍺 ハーフタイム！ 🍺</h2>
+      <p style="color:#ccc;margin-bottom:10px;">前半10問が終了しました！</p>
+      <div class="halftime-scores">
+        <div class="ht-item">
+          <div class="ht-icon">⚽</div>
+          <div class="ht-label">白戸功さん問題</div>
+          <div class="ht-value" id="htSoccer">0点</div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-icon">⚾</div>
+          <div class="ht-label">キーナンティミーさん問題</div>
+          <div class="ht-value" id="htBaseball">0点</div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-icon">📊</div>
+          <div class="ht-label">前半合計</div>
+          <div class="ht-value" id="htTotal">0点</div>
+        </div>
+      </div>
+      <p class="ht-msg" id="htMsg"></p>
+    </div>
+    <button class="continue-btn" onclick="resumeQuiz()">後半スタート！ ▶</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-card">
+      <h2>🏆 最終結果発表！🏆</h2>
+      <div class="result-score" id="resultScore">0<span> / 200点</span></div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <div class="bi-icon">⚽</div>
+          <div class="bi-label">白戸功さん問題</div>
+          <div class="bi-value" id="finalSoccer">0 / 100点</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="bi-icon">⚾</div>
+          <div class="bi-label">キーナンティミーさん問題</div>
+          <div class="bi-value" id="finalBaseball">0 / 100点</div>
+        </div>
+      </div>
+      <div class="rating-section">
+        <h3>📊 チーム内の風通しの良さ</h3>
+        <div class="rating-stars" id="ratingStars"></div>
+        <div class="rating-label" id="ratingLabel"></div>
+        <div class="rating-desc" id="ratingDesc"></div>
+      </div>
+    </div>
+    <button class="retry-btn" onclick="location.reload()">🔄 もう一度チャレンジ</button>
+  </div>
+
+</div>
+
+<script>
+// =============================================
+// QUIZ DATA — 10 soccer + 10 baseball = 20
+// =============================================
+const soccerQuestions = [
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんが所属しているシニアサッカーチームの名前は？',
+    choices:['埼玉マスターズ60','埼玉シニア60','関東レジェンズ60','さいたまFC60'],
+    answer:1,
+    explanation:'白戸功さんは<strong>「埼玉シニア60」</strong>に所属！60歳以上のプレーヤーで構成される埼玉県代表の強豪チームです！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんのポジションはどれ？',
+    choices:['GK（ゴールキーパー）','DF（ディフェンダー）','MF（ミッドフィールダー）','FW（フォワード）'],
+    answer:3,
+    explanation:'白戸功さんは<strong>FW（フォワード）</strong>！背番号9番を背負うストライカー。以前はMFも務めるマルチプレーヤーです！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんの背番号は何番？（2024年大会時）',
+    choices:['7番','9番','10番','11番'],
+    answer:1,
+    explanation:'白戸功さんの背番号は<strong>9番</strong>！エースストライカーの証です。一時期は18番をつけていた時期もありました。'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんが全国大会のメンバーに初めて選ばれたのは何年の大会から？',
+    choices:['2010年（第10回大会）','2014年（第14回大会）','2017年（第17回大会）','2020年（第20回大会）'],
+    answer:2,
+    explanation:'<strong>2017年の第17回大会</strong>から現在まで約10年近く連続で埼玉県代表に選ばれ続ける「埼玉シニア界のレジェンド」！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'2026年に地元・埼玉で開催される白戸功さんたちの特別な大会は？',
+    choices:['国民スポーツ大会 埼玉2026','マスターズリーグ関東決勝','ねんりんピック彩の国さいたま2026','シニアワールドカップ2026'],
+    answer:2,
+    explanation:'<strong>ねんりんピック彩の国さいたま2026</strong>が2026年11月7日〜10日に地元開催！白戸功さんが埼玉代表としてピッチに立つ姿が期待されています！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'2026年3月23日、白戸功さんは何歳の誕生日を迎える？',
+    choices:['65歳','66歳','67歳','68歳'],
+    answer:3,
+    explanation:'白戸功さんは<strong>68歳</strong>のお誕生日！🎂 68歳にしてなお現役ストライカーとして活躍し続ける、まさにレジェンドです！おめでとうございます！🎉'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'埼玉シニアサッカーのメイン会場「SFAフットボールセンター」がある市はどこ？',
+    choices:['さいたま市','川越市','加須市','熊谷市'],
+    answer:2,
+    explanation:'<strong>加須市</strong>にあるSFAフットボールセンターは人工芝のピッチを備え、シニアサッカーの聖地とも呼ばれています！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'2024年の第24回全国シニア（60歳以上）サッカー大会で、埼玉シニア60はどこまで進んだ？',
+    choices:['グループリーグ敗退','グループリーグ突破・決勝ラウンド進出','準優勝','優勝'],
+    answer:1,
+    explanation:'2024年の全国大会では<strong>グループリーグを突破し、決勝ラウンドに進出</strong>！白戸功さんもFWとして出場し、強豪相手に安定した戦いを見せました！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんのプレーの武器として知られているのは？',
+    choices:['鉄壁のヘディング守備','前線でのボールキープと勝負所での決定力','超ロングスローイン','PKの名手'],
+    answer:1,
+    explanation:'白戸功さんの武器は<strong>前線でのボールキープと、勝負所での決定力</strong>！相手ディフェンスとの駆け引きとゴール前での鋭い動き出しが持ち味です！'
+  },
+  {
+    type:'soccer', person:'白戸功さん',
+    question:'白戸功さんが出場する埼玉県シニアリーグの試合は、主に何曜日に行われる？',
+    choices:['金曜日','土曜日','日曜日','祝日のみ'],
+    answer:2,
+    explanation:'シニアリーグの公式戦は主に<strong>日曜日</strong>に月1〜2回のペースで行われています。SFAフットボールセンター等で白戸功さんの熱いプレーが見られます！'
+  }
+];
+
+const baseballQuestions = [
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手が所属していた社会人野球チームはどこ？',
+    choices:['日本生命','NTT関東','三菱重工長崎','新日鐵君津'],
+    answer:1,
+    explanation:'<strong>NTT関東</strong>（のちにNTT東日本へ転籍）に所属。千葉市代表として都市対抗野球でも活躍しました！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手の公式戦通算本塁打数は驚異の何本？',
+    choices:['85本','105本','135本','165本'],
+    answer:2,
+    explanation:'公式戦通算<strong>135本塁打</strong>という社会人野球界の金字塔！「プロですら手が付けられない」と言われた怪物スラッガーです！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手の後輩で、のちに「ミスターフルスイング」として大活躍したプロ野球選手は？',
+    choices:['松中信彦','小笠原道大','阿部慎之助','高橋由伸'],
+    answer:1,
+    explanation:'<strong>小笠原道大選手</strong>（日本ハム→巨人→中日）はキーナン選手の1学年後輩！「キーナンと小笠原のコンビはプロのクリーンナップより恐ろしい」と恐れられました！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'1997年の第68回都市対抗野球大会でキーナンティミー選手が受賞した個人賞は？',
+    choices:['最優秀選手賞','打撃賞','敢闘賞','本塁打王'],
+    answer:1,
+    explanation:'<strong>打撃賞</strong>を受賞！準々決勝敗退チームから個人賞が出るのは異例中の異例。大会通算打率.583（12打数7安打）の驚異的な数字！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手の出身について正しいのはどれ？',
+    choices:['アメリカ生まれの外国人選手','岩手県生まれ千葉県育ちの日本人','千葉県生まれ千葉県育ちの日本人','ハワイ生まれの帰国子女'],
+    answer:1,
+    explanation:'<strong>岩手県生まれ・千葉県育ちの日本人</strong>！お父様がアメリカ人、お母様が日本人。「JAPAN」のユニフォームを着た日本代表選手です！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手の身長はどのくらい？',
+    choices:['170cm台','180cm台','190cm超','200cm超'],
+    answer:2,
+    explanation:'<strong>190cmを超える</strong>大柄な体格！その巨体から放たれる打球は外野手をフェンス際まで下がらせ、バックスクリーン越えの場外弾も連発しました！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手が高校時代に注目されていたポジションは？',
+    choices:['捕手','遊撃手','投手','外野手'],
+    answer:2,
+    explanation:'千葉県の<strong>成田北高校で投手</strong>として注目されていました！NTT関東入社後に野手転向し、たちまちチームの主砲として頭角を現しました。'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手の人柄を表すエピソードとして有名なのは？',
+    choices:['デッドボールで相手投手に怒鳴り込んだ','紳士的で、デッドボールでも会釈して一塁へ走った','対戦相手に挑発パフォーマンスをした','審判と口論して退場になった'],
+    answer:1,
+    explanation:'威圧的な体格とは裏腹に<strong>非常に紳士的な性格</strong>！デッドボールでも軽く会釈して一塁へ。子供たちからは「優しくて大きな野球の神様」と慕われました！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'1996年の都市対抗で、キーナンティミー選手が補強選手として合流した際、同じチームにいた「のちの三冠王」は？',
+    choices:['落合博満','松中信彦','王貞治','中村剛也'],
+    answer:1,
+    explanation:'1996年の都市対抗で<strong>新日鐵君津</strong>に補強合流した際、<strong>松中信彦選手</strong>（のちのダイエーで三冠王）と共演！「松中・キーナン・小笠原」の夢のクリーンナップが実現しました！'
+  },
+  {
+    type:'baseball', person:'キーナンティミーさん',
+    question:'キーナンティミー選手が現役を引退したのは何年シーズン？',
+    choices:['2000年','2001年','2003年','2005年'],
+    answer:2,
+    explanation:'<strong>2003年シーズン</strong>をもって現役引退。引退後も少年野球の指導や都市対抗での始球式に登場。娘さんとの親子始球式も話題になりました！'
+  }
+];
+
+// =============================================
+// ENGINE
+// =============================================
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let allQuestions = [];
+let currentQ = 0;
+let score = 0;
+let soccerCorrect = 0;
+let baseballCorrect = 0;
+let halftimeShown = false;
+
+// Stars
+(function createStars() {
+  const c = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = Math.random()*2+'s';
+    s.style.width = s.style.height = (Math.random()*3+1)+'px';
+    c.appendChild(s);
+  }
+})();
+
+function startQuiz() {
+  // Shuffle each pool, then interleave: soccer, baseball, soccer, baseball...
+  const s = shuffleArray(soccerQuestions);
+  const b = shuffleArray(baseballQuestions);
+  allQuestions = [];
+  for (let i = 0; i < 10; i++) {
+    allQuestions.push(s[i], b[i]);
+  }
+  currentQ = 0; score = 0; soccerCorrect = 0; baseballCorrect = 0; halftimeShown = false;
+  document.getElementById('titleScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = allQuestions[currentQ];
+  const isSoccer = q.type === 'soccer';
+
+  const pct = (currentQ / allQuestions.length) * 100;
+  const pb = document.getElementById('progressBar');
+  pb.style.width = pct + '%';
+  pb.className = 'progress-bar ' + q.type;
+
+  document.getElementById('qNumber').textContent = `第${currentQ+1}問 / ${allQuestions.length}問`;
+  const badge = document.getElementById('qBadge');
+  badge.textContent = isSoccer ? `⚽ ${q.person}` : `⚾ ${q.person}`;
+  badge.className = 'q-badge ' + q.type;
+  document.getElementById('scoreDisplay').textContent = `スコア: ${score}点`;
+
+  const card = document.getElementById('questionCard');
+  card.className = 'question-card ' + (isSoccer ? 'soccer-border' : 'baseball-border');
+  card.style.animation = 'none'; card.offsetHeight; card.style.animation = 'slideIn 0.5s ease';
+  document.getElementById('questionText').textContent = q.question;
+
+  const labels = ['A','B','C','D'];
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  q.choices.forEach((c,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="label">${labels[i]}</span>${c}`;
+    btn.onclick = () => selectAnswer(i);
+    choicesEl.appendChild(btn);
+  });
+
+  document.getElementById('explanation').style.display = 'none';
+  document.getElementById('nextBtn').style.display = 'none';
+  
+  // Scroll to top on mobile
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectAnswer(idx) {
+  const q = allQuestions[currentQ];
+  const btns = document.querySelectorAll('.choice-btn');
+  const isCorrect = idx === q.answer;
+
+  btns.forEach(b => b.classList.add('disabled'));
+  btns[q.answer].classList.add('correct');
+  if (!isCorrect) btns[idx].classList.add('wrong');
+
+  if (isCorrect) {
+    score += 10;
+    if (q.type === 'soccer') soccerCorrect++;
+    else baseballCorrect++;
+  }
+  document.getElementById('scoreDisplay').textContent = `スコア: ${score}点`;
+
+  showEffect(q.type, isCorrect);
+
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = (isCorrect
+    ? '🎊 <strong style="color:#7fff7f">正解！</strong><br>'
+    : '😢 <strong style="color:#ff7f7f">残念…不正解</strong><br>') + q.explanation;
+  setTimeout(() => { exp.style.display = 'block'; }, 800);
+
+  const nextBtn = document.getElementById('nextBtn');
+  if (currentQ === allQuestions.length - 1) {
+    nextBtn.textContent = '最終結果を見る 🏆';
+  } else if (currentQ === 9 && !halftimeShown) {
+    nextBtn.textContent = 'ハーフタイムへ 🍺';
+  } else {
+    nextBtn.textContent = '次の問題へ ▶';
+  }
+  setTimeout(() => { nextBtn.style.display = 'inline-block'; }, 1000);
+}
+
+function nextQuestion() {
+  currentQ++;
+  if (currentQ >= allQuestions.length) {
+    showResult();
+  } else if (currentQ === 10 && !halftimeShown) {
+    showHalftime();
+  } else {
+    showQuestion();
+  }
+}
+
+function showHalftime() {
+  halftimeShown = true;
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('halftimeScreen').style.display = 'block';
+  document.getElementById('htSoccer').textContent = (soccerCorrect * 10) + '点';
+  document.getElementById('htBaseball').textContent = (baseballCorrect * 10) + '点';
+  document.getElementById('htTotal').textContent = score + '点';
+  let msg = '';
+  if (score >= 80) msg = '🔥 前半から絶好調！この勢いで後半も駆け抜けよう！';
+  else if (score >= 50) msg = '👍 いい感じ！後半でさらに巻き返しましょう！';
+  else msg = '💪 後半はここから逆転！まだまだチャンスあり！';
+  document.getElementById('htMsg').textContent = msg;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resumeQuiz() {
+  document.getElementById('halftimeScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  showQuestion();
+}
+
+// === EFFECTS ===
+function showEffect(type, correct) {
+  const ov = document.getElementById('effectOverlay');
+  if (type === 'soccer') {
+    if (correct) {
+      ov.innerHTML = '<div class="effect-text soccer-goal">⚽ GOAL!!</div>';
+      ov.style.background = 'rgba(0,166,81,0.15)';
+      spawnConfetti(['#00a651','#fff200','#ffffff'], 30);
+    } else {
+      ov.innerHTML = '<div class="effect-text soccer-miss">🥅 枠外…💨</div>';
+      ov.style.background = 'rgba(255,68,68,0.1)';
+    }
+  } else {
+    if (correct) {
+      ov.innerHTML = '<div class="effect-text baseball-hr">⚾ ホームラン!!</div>';
+      ov.style.background = 'rgba(255,215,0,0.12)';
+      spawnBaseballs(8);
+      spawnConfetti(['#c8102e','#ffd700','#ffffff','#1c2841'], 25);
+    } else {
+      ov.innerHTML = '<div class="effect-text baseball-out">🫥 三振…💫</div>';
+      ov.style.background = 'rgba(30,40,80,0.2)';
+    }
+  }
+  ov.style.display = 'flex';
+  setTimeout(() => { ov.style.display = 'none'; ov.innerHTML = ''; }, 1600);
+}
+
+function spawnConfetti(colors, count) {
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    el.style.left = Math.random()*100+'vw';
+    el.style.top = '-20px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.width = (Math.random()*10+6)+'px';
+    el.style.height = (Math.random()*14+6)+'px';
+    el.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    el.style.animationDuration = (Math.random()*2+1.5)+'s';
+    el.style.animationDelay = Math.random()*0.5+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+}
+
+function spawnBaseballs(count) {
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'baseball-emoji';
+    el.textContent = '⚾';
+    el.style.left = (40+Math.random()*20)+'vw';
+    el.style.top = (40+Math.random()*20)+'vh';
+    el.style.setProperty('--dx', (Math.random()*300-150)+'px');
+    el.style.setProperty('--dy', -(Math.random()*400+100)+'px');
+    el.style.animationDelay = Math.random()*0.3+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+}
+
+// === RESULT ===
+function showResult() {
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('resultScreen').style.display = 'block';
+
+  const el = document.getElementById('resultScore');
+  let disp = 0;
+  const iv = setInterval(() => {
+    disp += 4;
+    if (disp > score) disp = score;
+    el.innerHTML = disp + '<span> / 200点</span>';
+    if (disp >= score) clearInterval(iv);
+  }, 30);
+
+  document.getElementById('finalSoccer').textContent = `${soccerCorrect*10} / 100点`;
+  document.getElementById('finalBaseball').textContent = `${baseballCorrect*10} / 100点`;
+
+  const ratings = [
+    { min:0,   stars:1, label:'🌧️ まだまだこれから！', desc:'チーム内の話題、もう少しアンテナを張りましょう！次の飲み会でガッツリ語り合えばすぐレベルアップ間違いなし！🍻', color:'#888' },
+    { min:60,  stars:2, label:'☁️ ちょっと知ってる程度', desc:'基本は押さえてます！もう少し仲間の活躍を知ればコミュニケーション力UP。次の宴会でさらに深掘りしましょう！', color:'#6699cc' },
+    { min:100, stars:3, label:'⛅ なかなかの情報通！', desc:'チームの話題にしっかりついていけてます！普段からコミュニケーションが取れている証拠。いい感じです！', color:'#66bb6a' },
+    { min:140, stars:4, label:'☀️ 風通し抜群！', desc:'素晴らしい！仲間の活躍をしっかりフォローしていますね。このチームワークがあれば何でも乗り越えられる！', color:'#ff9800' },
+    { min:180, stars:5, label:'🌈 パーフェクトチーム！', desc:'圧巻の知識量！チーム内の風通しは最高レベル！白戸功さんもキーナンティミーさんも感涙の結果です！🏆✨', color:'#ffd700' },
+  ];
+
+  let rating = ratings[0];
+  for (const r of ratings) { if (score >= r.min) rating = r; }
+
+  document.getElementById('ratingStars').textContent = '⭐'.repeat(rating.stars) + '☆'.repeat(5-rating.stars);
+  const rl = document.getElementById('ratingLabel');
+  rl.textContent = rating.label;
+  rl.style.color = rating.color;
+  document.getElementById('ratingDesc').textContent = rating.desc;
+
+  setTimeout(() => spawnFinalConfetti(), 500);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function spawnFinalConfetti() {
+  const colors = ['#ffd700','#ff6b35','#ff2d55','#00a651','#fff200','#667eea','#c8102e','#ffffff'];
+  for (let i = 0; i < 70; i++) {
+    const el = document.createElement('div');
+    el.className = 'final-confetti';
+    el.style.left = '50vw'; el.style.top = '50vh';
+    el.style.width = (Math.random()*12+6)+'px';
+    el.style.height = (Math.random()*12+6)+'px';
+    el.style.background = colors[Math.floor(Math.random()*colors.length)];
+    el.style.borderRadius = Math.random()>0.5?'50%':'3px';
+    const angle = Math.random()*Math.PI*2;
+    const dist = Math.random()*500+200;
+    el.style.setProperty('--dx', Math.cos(angle)*dist+'px');
+    el.style.setProperty('--dy', Math.sin(angle)*dist+'px');
+    el.style.setProperty('--rot', (Math.random()*1080-540)+'deg');
+    el.style.animationDuration = (Math.random()*1.5+1)+'s';
+    el.style.animationDelay = Math.random()*0.5+'s';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  }
+}
+</script>
+</body>
+</html>
