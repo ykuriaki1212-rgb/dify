@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成AI部門事前課題進捗ダッシュボード</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a1f2e;
+            --accent-cyan: #00d4ff;
+            --accent-magenta: #ff00aa;
+            --accent-green: #00ff88;
+            --accent-yellow: #ffd700;
+            --accent-orange: #ff6b35;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: #2d3748;
+            --gradient-1: linear-gradient(135deg, #00d4ff 0%, #ff00aa 100%);
+            --gradient-2: linear-gradient(135deg, #1a1f2e 0%, #2d3748 100%);
+            --shadow-glow: 0 0 30px rgba(0, 212, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 170, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+        }
+
+        /* Header */
+        .header {
+            background: var(--gradient-2);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-1);
+        }
+
+        .header-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .title-section h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .title-section p {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Countdown Timer */
+        .countdown-container {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-glow);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(0, 212, 255, 0.5); }
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .countdown-timer.urgent {
+            color: #ff3333;
+            animation: urgentPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .countdown-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Flow Diagram Section */
+        .flow-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+        }
+
+        .flow-step {
+            flex: 0 0 auto;
+            min-width: 160px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .flow-step:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
+        }
+
+        .flow-step.completed {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .flow-step-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            color: var(--accent-magenta);
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-step-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-step-desc {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .flow-user-action {
+            background: rgba(255, 0, 170, 0.2);
+            border: 2px dashed var(--accent-magenta);
+            min-width: 100px;
+        }
+
+        .flow-user-action .flow-step-number {
+            color: var(--accent-yellow);
+        }
+
+        /* Progress Summary */
+        .progress-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .progress-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .progress-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .progress-card-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-card-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-card-sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Encouragement Message */
+        .encouragement-message {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(255, 215, 0, 0.2) 100%);
+            border: 2px solid var(--accent-green);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: encourageBounce 2s ease-in-out infinite;
+        }
+
+        @keyframes encourageBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .encouragement-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .encouragement-text {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            letter-spacing: 1px;
+        }
+
+        /* Steps Grid */
+        .steps-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .step-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            border-color: var(--accent-cyan);
+        }
+
+        .step-header {
+            background: var(--gradient-2);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .step-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 900;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            color: var(--bg-primary);
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .step-progress-badge {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .step-content {
+            padding: 1.5rem;
+        }
+
+        .criteria-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .criteria-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .criteria-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .criteria-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .criteria-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .criteria-select {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            min-width: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .criteria-select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        .criteria-select.completed {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        /* Issue Input */
+        .issue-section {
+            margin-top: 1.5rem;
+        }
+
+        .issue-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--accent-orange);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .issue-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .issue-textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .char-count.warning {
+            color: var(--accent-orange);
+        }
+
+        .char-count.error {
+            color: var(--accent-magenta);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-cyan);
+            border: 2px solid var(--accent-cyan);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: var(--bg-primary);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+
+        /* API Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-input {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 23, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            flex-direction: column;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-message {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            letter-spacing: 1px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .title-section h1 {
+                font-size: 1.3rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.5rem;
+            }
+
+            .flow-diagram {
+                flex-direction: column;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+
+            .criteria-item {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .criteria-select {
+                width: 100%;
+            }
+        }
+
+        /* Feedback Section Styles */
+        .feedback-section {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-overall {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feedback-overall-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .feedback-overall-content {
+            color: var(--text-primary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        .feedback-progress-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+        }
+
+        .feedback-progress-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .feedback-progress-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .feedback-progress-track {
+            flex: 1;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .feedback-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .feedback-progress-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            white-space: nowrap;
+        }
+
+        .feedback-table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .feedback-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        .feedback-table th,
+        .feedback-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        .feedback-table th {
+            background: var(--bg-secondary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+        }
+
+        .feedback-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .feedback-table tbody tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+
+        .feedback-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .col-no {
+            width: 50px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-cyan);
+        }
+
+        .col-step {
+            width: 70px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+
+        .col-point {
+            width: 140px;
+            color: var(--accent-magenta);
+            font-weight: 500;
+        }
+
+        .col-feedback {
+            min-width: 280px;
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .col-comment {
+            width: 320px;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .col-status {
+            width: 120px;
+            min-width: 110px;
+            text-align: center;
+        }
+
+        .feedback-comment {
+            width: 100%;
+            min-height: 120px;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.85rem;
+            resize: vertical;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            line-height: 1.5;
+        }
+
+        .feedback-comment:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .feedback-comment::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .feedback-char-count {
+            display: block;
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .feedback-char-count.warning {
+            color: var(--accent-orange);
+        }
+
+        .feedback-char-count.error {
+            color: var(--accent-magenta);
+        }
+
+        .feedback-status {
+            width: 100%;
+            min-width: 100px;
+            padding: 0.6rem 2.2rem 0.6rem 0.75rem;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .feedback-status:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+        }
+
+        .feedback-status.status-complete {
+            background-color: rgba(0, 255, 136, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .feedback-status.status-incomplete {
+            background-color: rgba(255, 107, 53, 0.1);
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+        }
+
+        @media (max-width: 1200px) {
+            .feedback-table {
+                min-width: 100%;
+            }
+            
+            .feedback-table th,
+            .feedback-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .col-feedback {
+                min-width: 200px;
+            }
+
+            .col-comment {
+                width: 240px;
+                min-width: 200px;
+            }
+
+            .col-status {
+                width: 110px;
+                min-width: 100px;
+            }
+
+            .feedback-comment {
+                min-height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1>生成AI部門事前課題進捗ダッシュボード</h1>
+                <p>Dify ワークフロー作成競技会 - 進捗管理システム</p>
+            </div>
+            <div class="countdown-container">
+                <div class="countdown-label">提出日まで残り</div>
+                <div class="countdown-timer" id="countdown">-- 日 --:--:--</div>
+                <div class="countdown-date">提出期限: 2026年1月15日 15:00</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Flow Diagram -->
+        <section class="flow-section">
+            <h2 class="section-title">フロー全体像</h2>
+            <div class="flow-diagram">
+                <div class="flow-step" id="flow-step-1">
+                    <div class="flow-step-number">STEP 1</div>
+                    <div class="flow-step-title">問い合わせ要望の理解</div>
+                    <div class="flow-step-desc">課題・目的・制約・要望タイプを構造化</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step flow-user-action">
+                    <div class="flow-step-number">USER</div>
+                    <div class="flow-step-title">承認/修正</div>
+                    <div class="flow-step-desc">要望確認</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" id="flow-step-2">
+                    <div class="flow-step-number">STEP 2</div>
+                    <div class="flow-step-title">類似提案検索(RAG)</div>
+                    <div class="flow-step-desc">社内ナレッジから事例抽出</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" id="flow-step-3">
+                    <div class="flow-step-number">STEP 3</div>
+                    <div class="flow-step-title">提案パターン整理</div>
+                    <div class="flow-step-desc">松竹梅3パターン立案</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step flow-user-action">
+                    <div class="flow-step-number">USER</div>
+                    <div class="flow-step-title">案選択</div>
+                    <div class="flow-step-desc">1案を選択</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" id="flow-step-4">
+                    <div class="flow-step-number">STEP 4</div>
+                    <div class="flow-step-title">ストーリー生成</div>
+                    <div class="flow-step-desc">論理構成で提案ドラフト作成</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step flow-user-action">
+                    <div class="flow-step-number">USER</div>
+                    <div class="flow-step-title">形式指定</div>
+                    <div class="flow-step-desc">PDF/Word選択</div>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step" id="flow-step-5">
+                    <div class="flow-step-number">STEP 5</div>
+                    <div class="flow-step-title">要約・資料化</div>
+                    <div class="flow-step-desc">最終出力・ダウンロード</div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons (フロー図の下) -->
+            <div class="action-buttons" style="margin-top: 1.5rem;">
+                <button class="btn btn-secondary" onclick="openApiSettings()">
+                    ⚙️ API設定
+                </button>
+                <button class="btn btn-success" onclick="saveToSpreadsheet()">
+                    ☁️ スプレッドシートに保存
+                </button>
+                <button class="btn btn-secondary" onclick="exportData()">
+                    📤 JSONエクスポート
+                </button>
+            </div>
+        </section>
+
+        <!-- Progress Summary -->
+        <section class="progress-summary">
+            <div class="progress-card">
+                <div class="progress-card-label">総合進捗率</div>
+                <div class="progress-card-value" id="total-progress">0%</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="total-progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-card-label">完了項目数</div>
+                <div class="progress-card-value" id="completed-count">0</div>
+                <div class="progress-card-sub" id="total-items">/ 0 項目</div>
+            </div>
+            <div class="progress-card">
+                <div class="progress-card-label">残り項目数</div>
+                <div class="progress-card-value" id="remaining-count">0</div>
+                <div class="progress-card-sub">未完了</div>
+            </div>
+        </section>
+
+        <!-- Encouragement Message -->
+        <div class="encouragement-message" id="encouragementMessage" style="display: none;">
+            <span class="encouragement-icon">🎉</span>
+            <span class="encouragement-text">もうすぐゴールです。最後まで頑張りましょう！</span>
+        </div>
+
+        <!-- Steps -->
+        <section class="steps-grid">
+            <!-- Step 1 -->
+            <div class="step-card" data-step="1">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <div class="step-number">1</div>
+                        <div class="step-title">問い合わせ要望の理解</div>
+                    </div>
+                    <div class="step-progress-badge" id="step1-badge">0 / 6</div>
+                </div>
+                <div class="step-content">
+                    <div class="criteria-section">
+                        <div class="criteria-title">📌 ポイント</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">情報不足時にAIが人間に再質問する仕組みがある</span>
+                                <select class="criteria-select" data-step="1" data-type="point" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-section">
+                        <div class="criteria-title">✅ 評価基準</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">曖昧な入力から「課題・目的・制約・要望タイプ」の4要素を漏れなく抽出できる</span>
+                                <select class="criteria-select" data-step="1" data-type="criteria" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">各要素が50～120文字で簡潔にまとまっている</span>
+                                <select class="criteria-select" data-step="1" data-type="criteria" data-index="1">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">情報不足時にAIが適切に再質問できている</span>
+                                <select class="criteria-select" data-step="1" data-type="criteria" data-index="2">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">選択や承認を行う場合、直感的に操作できる</span>
+                                <select class="criteria-select" data-step="1" data-type="criteria" data-index="3">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">想定外の入力に対してエラーにならず、再入力を促せる</span>
+                                <select class="criteria-select" data-step="1" data-type="criteria" data-index="4">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue-section">
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="1" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-1">0</span> / 800</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card" data-step="2">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <div class="step-number">2</div>
+                        <div class="step-title">類似提案検索（RAG）</div>
+                    </div>
+                    <div class="step-progress-badge" id="step2-badge">0 / 6</div>
+                </div>
+                <div class="step-content">
+                    <div class="criteria-section">
+                        <div class="criteria-title">📌 ポイント</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">出力がわかりやすく表形式で整理されている</span>
+                                <select class="criteria-select" data-step="2" data-type="point" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-section">
+                        <div class="criteria-title">✅ 評価基準</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">最大5件の結果になるように整備されている</span>
+                                <select class="criteria-select" data-step="2" data-type="criteria" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">課題と目的に沿った事例が抽出できている</span>
+                                <select class="criteria-select" data-step="2" data-type="criteria" data-index="1">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">要約文は50～150文字になっている</span>
+                                <select class="criteria-select" data-step="2" data-type="criteria" data-index="2">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">Difyの機能で引用元ファイルがわかるようになっている</span>
+                                <select class="criteria-select" data-step="2" data-type="criteria" data-index="3">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">ナレッジ参照結果、事例がなかった場合にハルシネーションしない</span>
+                                <select class="criteria-select" data-step="2" data-type="criteria" data-index="4">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue-section">
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="2" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-2">0</span> / 800</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card" data-step="3">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <div class="step-number">3</div>
+                        <div class="step-title">提案パターンの整理</div>
+                    </div>
+                    <div class="step-progress-badge" id="step3-badge">0 / 7</div>
+                </div>
+                <div class="step-content">
+                    <div class="criteria-section">
+                        <div class="criteria-title">📌 ポイント</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">内容がQCD（品質・費用・納期）で整理されており、ユーザーが比較しやすい</span>
+                                <select class="criteria-select" data-step="3" data-type="point" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-section">
+                        <div class="criteria-title">✅ 評価基準</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">松竹梅の差別化された提案ができている</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">各案は100～300文字で出力されている</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="1">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">ステップ1とステップ2の内容に準拠し、矛盾せず一貫性を保っている</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="2">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">選択や承認を行う場合、直感的に操作できる</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="3">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">QCDの観点が全ての提案に含まれている</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="4">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">想定外の入力に対してエラーにならず再入力を促せる</span>
+                                <select class="criteria-select" data-step="3" data-type="criteria" data-index="5">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue-section">
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="3" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-3">0</span> / 800</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card" data-step="4">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <div class="step-number">4</div>
+                        <div class="step-title">メッセージ設計とストーリー生成</div>
+                    </div>
+                    <div class="step-progress-badge" id="step4-badge">0 / 8</div>
+                </div>
+                <div class="step-content">
+                    <div class="criteria-section">
+                        <div class="criteria-title">📌 ポイント</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">出力後でも松竹梅プランの変更に対応可能</span>
+                                <select class="criteria-select" data-step="4" data-type="point" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-section">
+                        <div class="criteria-title">✅ 評価基準</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">メッセージが一文60文字以内</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">ストーリー構成が「現状→課題→解決策→効果」となっている</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="1">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">提案全体で500～1200文字になっている</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="2">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">一案で出力した後、他の案でも出力可能</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="3">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">PDFかWord出力をユーザーが選択できる</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="4">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">選択や承認を行う場合、直感的に操作できる</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="5">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">想定外の入力に対してエラーにならず、再入力を促せる</span>
+                                <select class="criteria-select" data-step="4" data-type="criteria" data-index="6">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue-section">
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="4" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-4">0</span> / 800</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="step-card" data-step="5">
+                <div class="step-header">
+                    <div class="step-header-left">
+                        <div class="step-number">5</div>
+                        <div class="step-title">要約と抽象化および資料化</div>
+                    </div>
+                    <div class="step-progress-badge" id="step5-badge">0 / 8</div>
+                </div>
+                <div class="step-content">
+                    <div class="criteria-section">
+                        <div class="criteria-title">📌 ポイント</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">PDFを選んだ場合でもWordで出力する別パターン出力に対応できる</span>
+                                <select class="criteria-select" data-step="5" data-type="point" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="criteria-section">
+                        <div class="criteria-title">✅ 評価基準</div>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <span class="criteria-text">ファイル生成がエラーなくできる</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="0">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">ファイルの中身に表示の崩れがない</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="1">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">要約にステップ4の内容が反映されている</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="2">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">要約は200～300文字以内になっている</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="3">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">要約は「目的・提案内容・効果」で構造化されている</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="4">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">選択や承認を行う場合、直感的に操作できる</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="5">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                            <div class="criteria-item">
+                                <span class="criteria-text">想定外の入力に対してエラーにならず、再入力を促せる</span>
+                                <select class="criteria-select" data-step="5" data-type="criteria" data-index="6">
+                                    <option value="incomplete">未完了</option>
+                                    <option value="complete">完了</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="issue-section">
+                        <div class="issue-label">📝 現在の課題（800字以内）</div>
+                        <textarea class="issue-textarea" data-step="5" maxlength="800" placeholder="このステップで直面している課題や懸念事項を記入してください..."></textarea>
+                        <div class="char-count"><span id="char-count-5">0</span> / 800</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feedback Section -->
+        <section class="feedback-section">
+            <div class="section-title">📋 中間評価フィードバック</div>
+            
+            <!-- Overall Comment -->
+            <div class="feedback-overall">
+                <div class="feedback-overall-title">📝 全体講評</div>
+                <div class="feedback-overall-content">
+                    一通りの要件については満たせていました。より高い点数を取るためには、Step3~5での想定外入力への対応や速度面の改善、文字数の制御など細かい部分を修正していくとよいでしょう。
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="feedback-progress-container">
+                <div class="feedback-progress-label">対応進捗</div>
+                <div class="feedback-progress-wrapper">
+                    <div class="feedback-progress-track">
+                        <div class="feedback-progress-fill" id="feedback-progress-bar"></div>
+                    </div>
+                    <span class="feedback-progress-text" id="feedback-progress-text">0 / 9 完了</span>
+                </div>
+            </div>
+
+            <!-- Feedback Table -->
+            <div class="feedback-table-container">
+                <table class="feedback-table">
+                    <thead>
+                        <tr>
+                            <th class="col-no">No.</th>
+                            <th class="col-step">Step</th>
+                            <th class="col-point">観点</th>
+                            <th class="col-feedback">フィードバック</th>
+                            <th class="col-comment">コメント（500字以内）</th>
+                            <th class="col-status">ステータス</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="feedback-row" data-id="1">
+                            <td class="col-no">1</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">構造化</td>
+                            <td class="col-feedback">要望タイプが文章で表示される、複数表示されることがあります。今回は一つに絞りましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="1" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="1">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="2">
+                            <td class="col-no">2</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">想定外入力の際の対応が、ユーザーにとって曖昧です。原因がわかるとよいでしょう。<br>※想定外の入力の場合でも不明点フローになってしまうパターンが多いです。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="2" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="2">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="3">
+                            <td class="col-no">3</td>
+                            <td class="col-step">1</td>
+                            <td class="col-point">構造化</td>
+                            <td class="col-feedback">要望タイプが不明の場合、候補をいくつか表示ではなく毎回すべての種類を表示するとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="3" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="3">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="4">
+                            <td class="col-no">4</td>
+                            <td class="col-step">2</td>
+                            <td class="col-point">適切なナレッジソース選択</td>
+                            <td class="col-feedback">Difyの引用機能を使って引用が明記できていないことがありました。引用を明記できるとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="4" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="4">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="5">
+                            <td class="col-no">5</td>
+                            <td class="col-step">4</td>
+                            <td class="col-point">要約内容</td>
+                            <td class="col-feedback">要約内容は全体で200～300文字になるように調整しましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="5" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="5">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="6">
+                            <td class="col-no">6</td>
+                            <td class="col-step">4.5</td>
+                            <td class="col-point">要約内容</td>
+                            <td class="col-feedback">出力形式の変更時、要約の内容も若干変化しています。要約内容は保持し、形式のみの変更となるようにしましょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="6" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="6">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="7">
+                            <td class="col-no">7</td>
+                            <td class="col-step">2~5</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">Step2以降の段階で無意味な文字列を入力すると何も返ってきません。各Stepでのユーザーの入力に応じて適切な出力ができるとよいでしょう。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="7" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="7">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="8">
+                            <td class="col-no">8</td>
+                            <td class="col-step">3~5</td>
+                            <td class="col-point">テキストの構造化</td>
+                            <td class="col-feedback">出力ごとにテキストの構造化形式にばらつきがあるため、統一した形式で出力できるとよいでしょう。また、PDF化の際に項目と文章が一体化してしまう部分も整理できるとよりよいです。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="8" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="8">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr class="feedback-row" data-id="9">
+                            <td class="col-no">9</td>
+                            <td class="col-step">1~5</td>
+                            <td class="col-point">想定外入力</td>
+                            <td class="col-feedback">最初に『松にします』と入力した際、STEP3に直接進んでしまうため、STEP1から順にSTEP5まで段階的に進む仕様にしてください。</td>
+                            <td class="col-comment">
+                                <textarea class="feedback-comment" data-id="9" maxlength="500" placeholder="対応内容や備考を記入..."></textarea>
+                                <span class="feedback-char-count">0/500</span>
+                            </td>
+                            <td class="col-status">
+                                <select class="feedback-status" data-id="9">
+                                    <option value="未完了">未完了</option>
+                                    <option value="完了">完了</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- API Settings Modal -->
+    <div class="modal-overlay" id="apiModal">
+        <div class="modal">
+            <h3 class="modal-title">⚙️ API設定</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">
+                Google Apps ScriptのウェブアプリURLを設定してください。
+            </p>
+            <input type="text" class="modal-input" id="apiUrl" placeholder="https://script.google.com/macros/s/AKfycbwgohZQjX5hMKXxidmyt-b23t6vsyjimmdFdwy73IhZEYApO8DFHHg-PcuTaQ4fxb6V/exec">
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeApiSettings()">キャンセル</button>
+                <button class="btn btn-primary" onclick="saveApiSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toast-message">保存しました</span>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-message" id="loadingMessage">データを読み込んでいます...</div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        let dashboardData = {
+            lastUpdated: new Date().toISOString(),
+            steps: {
+                1: { points: ['incomplete'], criteria: ['incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'], issue: '' },
+                2: { points: ['incomplete'], criteria: ['incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'], issue: '' },
+                3: { points: ['incomplete'], criteria: ['incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'], issue: '' },
+                4: { points: ['incomplete'], criteria: ['incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'], issue: '' },
+                5: { points: ['incomplete'], criteria: ['incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete', 'incomplete'], issue: '' }
+            }
+        };
+
+        // API URL (stored in localStorage)
+        let apiUrl = localStorage.getItem('dashboardApiUrl') || 'https://script.google.com/macros/s/AKfycbwgohZQjX5hMKXxidmyt-b23t6vsyjimmdFdwy73IhZEYApO8DFHHg-PcuTaQ4fxb6V/exec';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // スプレッドシートからデータを自動読み込み
+            await autoLoadFromSpreadsheet();
+        });
+
+        // スプレッドシートから自動読み込み
+        async function autoLoadFromSpreadsheet() {
+            showLoadingOverlay('データを読み込んでいます...');
+            
+            try {
+                const response = await fetch(`${apiUrl}?action=load`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    dashboardData = result.data;
+                    loadDataFromUI();
+                    updateProgress();
+                    updateFlowDiagram();
+                    hideLoadingOverlay();
+                    showToast('スプレッドシートからデータを読み込みました', 'success');
+                } else {
+                    // データがない場合はローカルから読み込み試行
+                    loadFromLocal();
+                    updateProgress();
+                    hideLoadingOverlay();
+                    showToast('新規データとして開始します', 'info');
+                }
+            } catch (error) {
+                console.error('Auto load error:', error);
+                // エラー時はローカルから読み込み
+                loadFromLocal();
+                updateProgress();
+                hideLoadingOverlay();
+                showToast('オフラインモードで開始します', 'warning');
+            }
+        }
+
+        // ローディングオーバーレイを表示
+        function showLoadingOverlay(message) {
+            const overlay = document.getElementById('loadingOverlay');
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.textContent = message;
+            overlay.classList.add('show');
+        }
+
+        // ローディングオーバーレイを非表示
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('show');
+        }
+
+        // Countdown Timer
+        function updateCountdown() {
+            // 日本時間 2026年1月15日 15:00 を明示的に設定
+            const deadline = new Date('2026-01-15T15:00:00+09:00');
+            const now = new Date();
+            const diff = deadline - now;
+
+            const countdownElement = document.getElementById('countdown');
+
+            if (diff <= 0) {
+                countdownElement.textContent = '提出期限終了';
+                countdownElement.classList.add('urgent');
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = 
+                `${days}日 ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            // 残り5日を切ったら赤色に
+            if (days < 5) {
+                countdownElement.classList.add('urgent');
+            } else {
+                countdownElement.classList.remove('urgent');
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Select changes
+            document.querySelectorAll('.criteria-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const step = e.target.dataset.step;
+                    const type = e.target.dataset.type;
+                    const index = parseInt(e.target.dataset.index);
+                    const value = e.target.value;
+
+                    if (type === 'point') {
+                        dashboardData.steps[step].points[index] = value;
+                    } else {
+                        dashboardData.steps[step].criteria[index] = value;
+                    }
+
+                    // Update select styling
+                    if (value === 'complete') {
+                        e.target.classList.add('completed');
+                    } else {
+                        e.target.classList.remove('completed');
+                    }
+
+                    updateProgress();
+                    updateFlowDiagram();
+                });
+            });
+
+            // Textarea changes
+            document.querySelectorAll('.issue-textarea').forEach(textarea => {
+                textarea.addEventListener('input', (e) => {
+                    const step = e.target.dataset.step;
+                    dashboardData.steps[step].issue = e.target.value;
+                    
+                    const charCount = e.target.value.length;
+                    const countSpan = document.getElementById(`char-count-${step}`);
+                    countSpan.textContent = charCount;
+                    
+                    const countDiv = countSpan.parentElement;
+                    countDiv.classList.remove('warning', 'error');
+                    if (charCount >= 750) {
+                        countDiv.classList.add('error');
+                    } else if (charCount >= 650) {
+                        countDiv.classList.add('warning');
+                    }
+                });
+            });
+        }
+
+        // Update Progress
+        function updateProgress() {
+            let totalComplete = 0;
+            let totalItems = 0;
+
+            for (let step = 1; step <= 5; step++) {
+                const stepData = dashboardData.steps[step];
+                const pointsComplete = stepData.points.filter(p => p === 'complete').length;
+                const criteriaComplete = stepData.criteria.filter(c => c === 'complete').length;
+                const stepComplete = pointsComplete + criteriaComplete;
+                const stepTotal = stepData.points.length + stepData.criteria.length;
+
+                totalComplete += stepComplete;
+                totalItems += stepTotal;
+
+                document.getElementById(`step${step}-badge`).textContent = `${stepComplete} / ${stepTotal}`;
+            }
+
+            const progressPercent = totalItems > 0 ? Math.round((totalComplete / totalItems) * 100) : 0;
+            const remainingItems = totalItems - totalComplete;
+            
+            document.getElementById('total-progress').textContent = `${progressPercent}%`;
+            document.getElementById('total-progress-bar').style.width = `${progressPercent}%`;
+            document.getElementById('completed-count').textContent = totalComplete;
+            document.getElementById('total-items').textContent = `/ ${totalItems} 項目`;
+            document.getElementById('remaining-count').textContent = remainingItems;
+
+            // 残り項目数が5以下の場合、応援メッセージを表示
+            const encouragementMessage = document.getElementById('encouragementMessage');
+            if (remainingItems <= 5 && remainingItems > 0) {
+                encouragementMessage.style.display = 'block';
+            } else if (remainingItems === 0) {
+                encouragementMessage.querySelector('.encouragement-text').textContent = '🎊 おめでとうございます！全項目完了です！ 🎊';
+                encouragementMessage.style.display = 'block';
+            } else {
+                encouragementMessage.style.display = 'none';
+            }
+        }
+
+        // Update Flow Diagram
+        function updateFlowDiagram() {
+            for (let step = 1; step <= 5; step++) {
+                const stepData = dashboardData.steps[step];
+                const allComplete = 
+                    stepData.points.every(p => p === 'complete') && 
+                    stepData.criteria.every(c => c === 'complete');
+                
+                const flowStep = document.getElementById(`flow-step-${step}`);
+                if (flowStep) {
+                    if (allComplete) {
+                        flowStep.classList.add('completed');
+                    } else {
+                        flowStep.classList.remove('completed');
+                    }
+                }
+            }
+        }
+
+        // Load data from UI
+        function loadDataFromUI() {
+            document.querySelectorAll('.criteria-select').forEach(select => {
+                const step = select.dataset.step;
+                const type = select.dataset.type;
+                const index = parseInt(select.dataset.index);
+
+                if (type === 'point') {
+                    select.value = dashboardData.steps[step].points[index];
+                } else {
+                    select.value = dashboardData.steps[step].criteria[index];
+                }
+
+                if (select.value === 'complete') {
+                    select.classList.add('completed');
+                } else {
+                    select.classList.remove('completed');
+                }
+            });
+
+            document.querySelectorAll('.issue-textarea').forEach(textarea => {
+                const step = textarea.dataset.step;
+                textarea.value = dashboardData.steps[step].issue || '';
+                document.getElementById(`char-count-${step}`).textContent = textarea.value.length;
+            });
+        }
+
+        // Save to Local Storage
+        function saveToLocal() {
+            dashboardData.lastUpdated = new Date().toISOString();
+            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+            showToast('保存しました');
+        }
+
+        // Load from Local Storage
+        function loadFromLocal() {
+            const saved = localStorage.getItem('dashboardData');
+            if (saved) {
+                dashboardData = JSON.parse(saved);
+                loadDataFromUI();
+                updateProgress();
+                updateFlowDiagram();
+            }
+        }
+
+        // API Settings
+        function openApiSettings() {
+            document.getElementById('apiUrl').value = apiUrl;
+            document.getElementById('apiModal').classList.add('show');
+        }
+
+        function closeApiSettings() {
+            document.getElementById('apiModal').classList.remove('show');
+        }
+
+        function saveApiSettings() {
+            apiUrl = document.getElementById('apiUrl').value;
+            localStorage.setItem('dashboardApiUrl', apiUrl);
+            closeApiSettings();
+            showToast('API設定を保存しました');
+        }
+
+        // Save to Spreadsheet
+        async function saveToSpreadsheet() {
+            if (!apiUrl) {
+                showToast('API URLを設定してください', 'error');
+                openApiSettings();
+                return;
+            }
+
+            try {
+                dashboardData.lastUpdated = new Date().toISOString();
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'save',
+                        data: dashboardData
+                    })
+                });
+
+                showToast('スプレッドシートに保存リクエストを送信しました');
+                saveToLocal(); // Also save locally as backup
+            } catch (error) {
+                console.error('Save error:', error);
+                showToast('保存に失敗しました: ' + error.message, 'error');
+            }
+        }
+
+        // Load from Spreadsheet
+        async function loadFromSpreadsheet() {
+            if (!apiUrl) {
+                showToast('API URLを設定してください', 'error');
+                openApiSettings();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}?action=load`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    dashboardData = result.data;
+                    loadDataFromUI();
+                    updateProgress();
+                    updateFlowDiagram();
+                    saveToLocal(); // Also save locally
+                    showToast('スプレッドシートから読み込みました');
+                } else {
+                    showToast('データが見つかりません', 'error');
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showToast('読み込みに失敗しました: ' + error.message, 'error');
+            }
+        }
+
+        // Export Data as JSON
+        function exportData() {
+            dashboardData.lastUpdated = new Date().toISOString();
+            const dataStr = JSON.stringify(dashboardData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `dashboard_export_${new Date().toISOString().slice(0,10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('JSONファイルをエクスポートしました');
+        }
+
+        // Show Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            toastMessage.textContent = message;
+            
+            // アイコンと色をタイプに応じて設定
+            const config = {
+                success: { icon: '✅', color: 'var(--accent-green)' },
+                error: { icon: '❌', color: 'var(--accent-magenta)' },
+                warning: { icon: '⚠️', color: 'var(--accent-orange)' },
+                info: { icon: 'ℹ️', color: 'var(--accent-cyan)' }
+            };
+            
+            const { icon, color } = config[type] || config.success;
+            toastIcon.textContent = icon;
+            toast.style.borderColor = color;
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Feedback Section Functions
+        function initFeedbackSection() {
+            loadFeedbackData();
+            setupFeedbackEventListeners();
+        }
+
+        function loadFeedbackData() {
+            const saved = localStorage.getItem('feedbackData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.querySelectorAll('.feedback-comment').forEach(textarea => {
+                    const id = textarea.dataset.id;
+                    if (data[id]) {
+                        textarea.value = data[id].comment || '';
+                        updateFeedbackCharCount(textarea);
+                    }
+                });
+                document.querySelectorAll('.feedback-status').forEach(select => {
+                    const id = select.dataset.id;
+                    if (data[id]) {
+                        select.value = data[id].status || '未完了';
+                        updateFeedbackStatusStyle(select);
+                    }
+                });
+            }
+            updateFeedbackProgress();
+        }
+
+        function setupFeedbackEventListeners() {
+            document.querySelectorAll('.feedback-comment').forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    updateFeedbackCharCount(this);
+                    saveFeedbackData();
+                });
+            });
+            document.querySelectorAll('.feedback-status').forEach(select => {
+                select.addEventListener('change', function() {
+                    updateFeedbackStatusStyle(this);
+                    saveFeedbackData();
+                    updateFeedbackProgress();
+                });
+            });
+        }
+
+        function updateFeedbackCharCount(textarea) {
+            const countSpan = textarea.parentElement.querySelector('.feedback-char-count');
+            const count = textarea.value.length;
+            countSpan.textContent = `${count}/500`;
+            countSpan.classList.remove('warning', 'error');
+            if (count >= 500) {
+                countSpan.classList.add('error');
+            } else if (count >= 400) {
+                countSpan.classList.add('warning');
+            }
+        }
+
+        function updateFeedbackStatusStyle(select) {
+            select.classList.remove('status-complete', 'status-incomplete');
+            if (select.value === '完了') {
+                select.classList.add('status-complete');
+            } else {
+                select.classList.add('status-incomplete');
+            }
+        }
+
+        function saveFeedbackData() {
+            const data = {};
+            document.querySelectorAll('.feedback-row').forEach(row => {
+                const id = row.dataset.id;
+                const comment = row.querySelector('.feedback-comment').value;
+                const status = row.querySelector('.feedback-status').value;
+                data[id] = { comment, status };
+            });
+            localStorage.setItem('feedbackData', JSON.stringify(data));
+        }
+
+        function updateFeedbackProgress() {
+            const total = document.querySelectorAll('.feedback-status').length;
+            const completed = document.querySelectorAll('.feedback-status option[value="完了"]:checked').length || 
+                             Array.from(document.querySelectorAll('.feedback-status')).filter(s => s.value === '完了').length;
+            const progressText = document.getElementById('feedback-progress-text');
+            const progressBar = document.getElementById('feedback-progress-bar');
+            if (progressText && progressBar) {
+                const percent = Math.round((completed / total) * 100);
+                progressText.textContent = `${completed} / ${total} 完了`;
+                progressBar.style.width = `${percent}%`;
+            }
+        }
+
+        // Initialize feedback section when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initFeedbackSection();
+        });
+    </script>
+</body>
+</html>
